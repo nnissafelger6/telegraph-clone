@@ -1,0 +1,16 @@
+//- views/home.pug
+doctype html
+html
+  head
+    meta(charset='utf-8')
+    title Writing app
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+  body
+    h1 Writing app
+    if error
+      p(style='color:#c00')= error
+    form(method='post', action='/publish')
+      input(type='text', name='title', placeholder='Title', required)
+      input(type='text', name='author', placeholder='Author (optional)')
+      textarea(name='content', placeholder='Write here...', rows='10', required)
+      button(type='submit') Submit
