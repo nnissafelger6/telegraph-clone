@@ -1,13 +1,16 @@
-extends base.pug
-
-block alert
-  if firsttime 
-    .alert
-      h3.alert__heading Post published!
-      p.alert__text  you can share it with the URL. 👍
-
-block content 
-  .wrapper
-    h1.page__name #{title}
-    i.username #{username}
-    p.post__text #{post_text}
+//- views/post.pug
+doctype html
+html
+  head
+    meta(charset='utf-8')
+    title= post.title
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    meta(property='og:title', content=post.title)
+    meta(property='og:type', content='article')
+  body
+    h1= post.title
+    if post.author
+      .author= post.author
+    time(datetime=post.createdAt)= new Date(post.createdAt).toLocaleString('ru-RU')
+    //- Для простоты разрешим базовый HTML, переносы строк заменяем на <br>
+    article!= (post.content || '').replace(/\n/g,'<br>')
