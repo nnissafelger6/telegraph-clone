@@ -1,24 +1,36 @@
-require("dotenv").config();
-require("./helpers/connect");
+// routes/index.js
+const express = require('express');
+const router = express.Router();
 
-const express = require("express");
-const bodyParser = require("body-parser");
-const app = express();
-const routes = require("./routes/index");
-const { globalError } = require("./helpers/error");
-const logger = require("./helpers/logger");
+// простое "хранилище" для теста
+const posts = new Map();
 
-// express configs
-app.set("views", "./views");
-app.set("view engine", "pug");
-app.use(express.static("static"));
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(logger);
-// routes
-app.use("/", routes);
+function makeSlug() {
+  return Date.now().toString(36);
+}
 
-// error handler
-app.use(globalError);
+// форма
+router.get('/', (req, res) => {
+  res.render('home', { error: null });
+});
 
-const port = process.env.PORT || 3000;
-app.listen(port, () => console.log("app listening on port 3000!"));
+// обработка отправки формы
+router.post('/publish', (req, res) => {
+  const { title, author, content } = req.body || {};
+  if (!title || !content) {
+    return res.status(400).render('home', { error: 'Введите заголовок и текст' });
+  }
+  const slug = makeSlug();
+  const createdAt = new Date().toISOString();
+  posts.set(slug, { title, author, content, createdAt });
+  return res.redirect(`/p/${slug}`);
+});
+
+// страница статьи
+router.get('/p/:slug', (req, res, next) => {
+  const post = posts.get(req.params.slug);
+  if (!post) return next(); // 404
+  res.render('post', { post });
+});
+
+module.exports = router;
